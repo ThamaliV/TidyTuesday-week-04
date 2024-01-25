@@ -1,0 +1,128 @@
+---
+title: "tt week 4"
+author: "Thamali Vidanage"
+date: "2024-01-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(tidytuesdayR)
+library(here)
+library(dplyr)
+library(ggplot2)
+library(sysfonts)
+library(showtext)
+```
+
+
+```{r}
+font_add_google("Alegreya Sans", "aleg")
+font_add_google("Oswald", "oswald")
+font_add_google("PT Sans Narrow", "pt")
+showtext_auto()
+
+```
+
+
+
+
+```{r}
+
+tues_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-01-23/english_education.csv')
+
+
+```
+```{r}
+education_data <- tues_data %>%
+                  select(town11cd,population_2011, size_flag, education_score) 
+              
+education_data
+```
+
+
+
+```{r}
+filtered_data <- education_data %>%
+  group_by(size_flag) %>%
+  filter(n() >=3) %>%
+  ungroup()
+
+```
+
+
+
+
+```{r}
+plot <- ggplot(filtered_data, aes(x = education_score, y = size_flag, fill = size_flag)) +
+  geom_violin() +
+  geom_vline(aes(xintercept= 0), linetype= "dotdash")+
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 10))+
+  
+  scale_fill_brewer(palette="Dark2")+
+  
+          
+          labs(title = "Smaller towns exhibit the highest average educational attainment in UK",
+             subtitle= "Smaller towns have better average score and educational attainment has  spanned widely \n while the city's is comparatively low", 
+              caption = "Source: The UK Office for National Statistics | Thamali Vidanage",
+                  x= "Education Score", y= "Town size") + 
+  
+          
+  theme(
+          
+    
+    legend.position = "NULL",
+    panel.background = element_rect(fill = "white"),
+    #panel.border = element_rect(colour = "black", fill = NA),
+    #panel.grid = element_line(), 
+    panel.grid.minor = element_line(color= "grey", size = rel(0.10)),
+    #panel.grid.major = element_line(color= "grey", size= rel(0.10)),
+   
+    
+    
+    
+    axis.text= element_text(size=25, color= "black"),
+    axis.title=element_text(size=35,face="bold"),
+     
+                         
+    plot.caption =  element_text(family= "nt", size=25, color="black", face="italic"),
+    plot.title = element_text( hjust = 0.90, family= "oswald", size= 55, face= "bold"),
+    plot.subtitle = element_text(hjust = 0.5, family= "aleg", size= 40, face= "plain", 
+                            margin=margin(0.5,0,0.5,-6.5,'cm')),
+    plot.margin= margin(0.5,0.5,0.5,0.75, "cm"),
+    
+    plot.background = element_rect(
+      fill = "white",
+      colour = "black"))
+      
+
+
+```
+
+
+
+
+       
+
+```{r}
+ggsave(here("figures", "plot.jpeg"),plot, width = 20, 
+  height = 15, 
+  units = "cm", 
+  dpi = 300 )
+```
+
+
+
+
+
+
+
+
+
+
+
